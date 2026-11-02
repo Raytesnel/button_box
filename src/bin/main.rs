@@ -10,7 +10,7 @@
 use defmt::info;
 use esp_hal::{
     clock::CpuClock,
-    delay::Delay,
+    delay::{self, Delay},
     gpio::{Input, InputConfig, Io, Level, Output, OutputConfig, Pull},
     ledc::{
         Ledc, LowSpeed,
@@ -34,12 +34,6 @@ enum Note {
     C5 = 523,
     A5 = 666,
 }
-#[derive(Copy, Clone)]
-struct BeepConfig {
-    note: Note,
-    duration_ms: u32,
-    repeats: u8,
-}
 
 enum Colors {
     RED,
@@ -53,18 +47,41 @@ struct Button {
     color: Colors,
     switch: Input<'static>,
     led: Output<'static>,
-    beep: BeepConfig,
+    note: Note,
+    beep_duration_ms: u32,
+    blink_time_ms: u64,
 }
 impl Button {
-    fn new(color: Colors, switch: Input<'static>, led: Output<'static>, beep: BeepConfig) -> Self {
+    fn new(color: Colors, switch: Input<'static>, led: Output<'static>, note: Note) -> Self {
         Self {
             color,
             switch,
             led,
-            beep,
+            note,
+            beep_duration_ms: 150,
+            blink_time_ms: 500,
         }
     }
+    fn make_sound(&self, buzzer: &mut Output<'_>, delay: &Delay) {
+        let freq_hz = self.note as u32;
+        let half_period_us = 1_000_000 / (freq_hz * 2);
+        let cycles = freq_hz * self.beep_duration_ms / 1000;
+        for _ in 0..cycles {
+            buzzer.set_high();
+            delay.delay_micros(half_period_us);
+            buzzer.set_low();
+            delay.delay_micros(half_period_us);
+        }
+    }
+    fn blink_and_beep(&mut self, mut buzzer: &mut Output<'_>, delay: &Delay) {
+        self.led.set_high();
+        let delay_start = Instant::now();
+        self.make_sound(&mut buzzer, &delay);
+        while delay_start.elapsed() < Duration::from_millis(self.blink_time_ms) {}
+        self.led.set_low();
+    }
 }
+
 #[allow(
     clippy::large_stack_frames,
     reason = "it's not unusual to allocate larger buffers etc. in main"
@@ -76,62 +93,44 @@ fn main() -> ! {
     let _peripherals = esp_hal::init(config);
     let button_config = InputConfig::default().with_pull(Pull::Up);
     let led_config = OutputConfig::default();
+    let mut buzzer = Output::new(_peripherals.GPIO4, Level::Low, led_config);
+    let delay = Delay::new();
     let mut buttons = [
         Button::new(
             Colors::GREEN,
             Input::new(_peripherals.GPIO2, button_config),
             Output::new(_peripherals.GPIO3, Level::Low, led_config),
-            BeepConfig {
-                note: Note::C4,
-                duration_ms: 150,
-                repeats: 1,
-            },
+            Note::C4,
         ),
         Button::new(
             Colors::YELLOW,
             Input::new(_peripherals.GPIO5, button_config),
             Output::new(_peripherals.GPIO6, Level::Low, led_config),
-            BeepConfig {
-                note: Note::E4,
-                duration_ms: 150,
-                repeats: 1,
-            },
+            Note::E4,
         ),
         Button::new(
             Colors::RED,
             Input::new(_peripherals.GPIO7, button_config),
             Output::new(_peripherals.GPIO21, Level::Low, led_config),
-            BeepConfig {
-                note: Note::G4,
-                duration_ms: 150,
-                repeats: 1,
-            },
+            Note::G4,
         ),
         Button::new(
             Colors::BLUE,
             Input::new(_peripherals.GPIO20, button_config),
             Output::new(_peripherals.GPIO8, Level::Low, led_config),
-            BeepConfig {
-                note: Note::C5,
-                duration_ms: 150,
-                repeats: 1,
-            },
+            Note::C5,
         ),
         Button::new(
             Colors::WHITE,
             Input::new(_peripherals.GPIO9, button_config),
             Output::new(_peripherals.GPIO10, Level::Low, led_config),
-            BeepConfig {
-                note: Note::A5,
-                duration_ms: 150,
-                repeats: 1,
-            },
+            Note::A5,
         ),
     ];
 
     loop {
-        info!("Hello world!");
-        let delay_start = Instant::now();
-        while delay_start.elapsed() < Duration::from_millis(500) {}
+        for mut button in buttons.iter_mut() {
+            button.blink_and_beep(&mut buzzer, &delay);
+        }
     }
 }
