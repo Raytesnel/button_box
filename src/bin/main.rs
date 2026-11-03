@@ -7,16 +7,10 @@
 )]
 #![deny(clippy::large_stack_frames)]
 
-use defmt::info;
 use esp_hal::{
     clock::CpuClock,
-    delay::{self, Delay},
-    gpio::{Input, InputConfig, Io, Level, Output, OutputConfig, Pull},
-    ledc::{
-        Ledc, LowSpeed,
-        channel::{self, ChannelIFace},
-        timer::{self, TimerIFace},
-    },
+    delay::Delay,
+    gpio::{Input, InputConfig, Level, Output, OutputConfig, Pull},
     main,
     time::{Duration, Instant},
 };
@@ -36,11 +30,11 @@ enum Note {
 }
 #[derive(Copy, Clone, defmt::Format)]
 enum Colors {
-    RED,
-    BLUE,
-    GREEN,
-    YELLOW,
-    WHITE,
+    Red,
+    Blue,
+    Green,
+    Yellow,
+    White,
 }
 
 struct Button {
@@ -73,11 +67,11 @@ impl Button {
             delay.delay_micros(half_period_us);
         }
     }
-    fn blink_and_beep(&mut self, mut buzzer: &mut Output<'_>, delay: &Delay) {
+    fn blink_and_beep(&mut self, buzzer: &mut Output<'_>, delay: &Delay) {
         defmt::debug!("its time for color:{:?}", &self.color);
         self.led.set_high();
         let delay_start = Instant::now();
-        self.make_sound(&mut buzzer, &delay);
+        self.make_sound(buzzer, delay);
         while delay_start.elapsed() < Duration::from_millis(self.blink_time_ms) {}
         self.led.set_low();
     }
@@ -101,31 +95,31 @@ fn main() -> ! {
     let delay = Delay::new();
     let mut buttons = [
         Button::new(
-            Colors::GREEN,
+            Colors::Green,
             Input::new(_peripherals.GPIO2, button_config),
             Output::new(_peripherals.GPIO3, Level::Low, led_config),
             Note::C4,
         ),
         Button::new(
-            Colors::YELLOW,
+            Colors::Yellow,
             Input::new(_peripherals.GPIO5, button_config),
             Output::new(_peripherals.GPIO6, Level::Low, led_config),
             Note::E4,
         ),
         Button::new(
-            Colors::RED,
+            Colors::Red,
             Input::new(_peripherals.GPIO7, button_config),
             Output::new(_peripherals.GPIO21, Level::Low, led_config),
             Note::G4,
         ),
         Button::new(
-            Colors::BLUE,
+            Colors::Blue,
             Input::new(_peripherals.GPIO20, button_config),
             Output::new(_peripherals.GPIO8, Level::Low, led_config),
             Note::C5,
         ),
         Button::new(
-            Colors::WHITE,
+            Colors::White,
             Input::new(_peripherals.GPIO9, button_config),
             Output::new(_peripherals.GPIO10, Level::Low, led_config),
             Note::A5,
@@ -133,7 +127,7 @@ fn main() -> ! {
     ];
     defmt::info!("button setup done, entering loop");
     loop {
-        for mut button in buttons.iter_mut() {
+        for button in buttons.iter_mut() {
             if button.is_pressed() {
                 defmt::info!("button {:?} is pressed!", &button.color);
                 button.blink_and_beep(&mut buzzer, &delay);
