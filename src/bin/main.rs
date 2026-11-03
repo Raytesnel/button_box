@@ -34,7 +34,7 @@ enum Note {
     C5 = 523,
     A5 = 666,
 }
-
+#[derive(Copy, Clone, defmt::Format)]
 enum Colors {
     RED,
     BLUE,
@@ -74,11 +74,15 @@ impl Button {
         }
     }
     fn blink_and_beep(&mut self, mut buzzer: &mut Output<'_>, delay: &Delay) {
+        defmt::debug!("its time for color:{:?}", &self.color);
         self.led.set_high();
         let delay_start = Instant::now();
         self.make_sound(&mut buzzer, &delay);
         while delay_start.elapsed() < Duration::from_millis(self.blink_time_ms) {}
         self.led.set_low();
+    }
+    fn is_pressed(&self) -> bool {
+        self.switch.is_low()
     }
 }
 
@@ -127,10 +131,13 @@ fn main() -> ! {
             Note::A5,
         ),
     ];
-
+    defmt::info!("button setup done, entering loop");
     loop {
         for mut button in buttons.iter_mut() {
-            button.blink_and_beep(&mut buzzer, &delay);
+            if button.is_pressed() {
+                defmt::info!("button {:?} is pressed!", &button.color);
+                button.blink_and_beep(&mut buzzer, &delay);
+            }
         }
     }
 }
