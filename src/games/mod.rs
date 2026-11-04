@@ -1,6 +1,7 @@
 use crate::cube::Cube;
 
 mod free_play;
+mod reaction;
 
 #[derive(Copy, Clone, defmt::Format)]
 pub enum Mode {
@@ -23,6 +24,7 @@ pub const MODES: [Mode; 5] = [
 pub fn run_game(mode: Mode, cube: &mut Cube) {
     match mode {
         Mode::FreePlay => free_play::play(cube),
-        Mode::Simon | Mode::Reaction | Mode::Kids | Mode::Critter => {}
+        Mode::Reaction => reaction::play(cube),
+        Mode::Simon | Mode::Kids | Mode::Critter => {}
     }
 }

@@ -1,3 +1,5 @@
+use core::slice::SliceIndex;
+
 use crate::button::Button;
 use esp_hal::{delay::Delay, gpio::Output, rng::Rng};
 
@@ -23,5 +25,10 @@ impl Cube {
     pub fn wait_release(&self) {
         while self.buttons.iter().any(|b| b.is_pressed()) {}
         self.delay.delay_millis(50);
+    }
+
+    /// choose a random button
+    pub fn random_button(&self) -> usize {
+        (self.rng.random() % self.buttons.len() as u32) as usize
     }
 }
