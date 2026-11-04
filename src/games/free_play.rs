@@ -17,4 +17,5 @@ pub fn play(cube: &mut Cube) {
             }
         }
     }
+    cube.make_game_over_sound();
 }

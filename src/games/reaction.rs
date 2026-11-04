@@ -34,7 +34,8 @@ pub fn play(cube: &mut Cube) {
     defmt::info!(
         "Good job!, you have reached level {:?}, ending game.",
         level
-    )
+    );
+    cube.make_game_over_sound();
 }
 
 fn wait_for_press(button: &Button, timeout_ms: u64) -> bool {
