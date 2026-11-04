@@ -16,9 +16,14 @@ use esp_hal::{
     clock::CpuClock,
     delay::Delay,
     gpio::{Input, InputConfig, Level, Output, OutputConfig, Pull},
+    ledc::{
+        LSGlobalClkSource, Ledc, LowSpeed,
+        channel::{self},
+        timer::{self, TimerIFace},
+    },
     main,
     rng::Rng,
-    time::{Duration, Instant},
+    time::Rate,
 };
 use panic_rtt_target as _;
 
@@ -35,41 +40,66 @@ fn main() -> ! {
     rtt_target::rtt_init_defmt!();
     let peripherals = esp_hal::init(esp_hal::Config::default().with_cpu_clock(CpuClock::max()));
     let button_config = InputConfig::default().with_pull(Pull::Up);
-    let led_config = OutputConfig::default();
+
+    let mut ledc = Ledc::new(peripherals.LEDC);
+    ledc.set_global_slow_clock(LSGlobalClkSource::APBClk); // welke klokbron
+    let mut timer = ledc.timer::<LowSpeed>(timer::Number::Timer0);
+    timer
+        .configure(timer::config::Config {
+            duty: timer::config::Duty::Duty8Bit, // 2^8 = 256 stapjes helderheid
+            clock_source: timer::LSClockSource::APBClk,
+            frequency: Rate::from_khz(24),
+        })
+        .unwrap();
 
     let mut cube = Cube {
-        buzzer: Output::new(peripherals.GPIO4, Level::Low, led_config),
+        buzzer: Output::new(peripherals.GPIO4, Level::Low, OutputConfig::default()),
         delay: Delay::new(),
         rng: Rng::new(),
         buttons: [
             Button::new(
                 Colors::Green,
                 Input::new(peripherals.GPIO2, button_config),
-                Output::new(peripherals.GPIO3, Level::Low, led_config),
+                &ledc,
+                &timer,
+                channel::Number::Channel0,
+                peripherals.GPIO3,
                 Note::C4,
             ),
             Button::new(
                 Colors::Yellow,
                 Input::new(peripherals.GPIO5, button_config),
-                Output::new(peripherals.GPIO6, Level::Low, led_config),
+                &ledc,
+                &timer,
+                channel::Number::Channel1,
+                peripherals.GPIO6,
                 Note::E4,
             ),
             Button::new(
                 Colors::Red,
                 Input::new(peripherals.GPIO7, button_config),
-                Output::new(peripherals.GPIO21, Level::Low, led_config),
+                &ledc,
+                &timer,
+                channel::Number::Channel2,
+                peripherals.GPIO21,
                 Note::G4,
             ),
             Button::new(
                 Colors::Blue,
                 Input::new(peripherals.GPIO20, button_config),
-                Output::new(peripherals.GPIO8, Level::Low, led_config),
+                &ledc,
+                &timer,
+                channel::Number::Channel3,
+                peripherals.GPIO8,
                 Note::C5,
             ),
             Button::new(
                 Colors::White,
                 Input::new(peripherals.GPIO9, button_config),
-                Output::new(peripherals.GPIO10, Level::Low, led_config),
+                &ledc,
+                &timer,
+                channel::Number::Channel4,
+                peripherals.GPIO10,
                 Note::A5,
             ),
         ],

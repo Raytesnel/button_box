@@ -10,9 +10,9 @@ pub fn play(cube: &mut Cube) {
     while last_input.elapsed() < Duration::from_secs(30) {
         for i in 0..cube.buttons.len() {
             if cube.buttons[i].is_pressed() {
-                cube.buttons[i].led.set_high();
+                cube.buttons[i].turn_led_on();
                 cube.buttons[i].make_sound(&mut cube.buzzer, &cube.delay);
-                cube.buttons[i].led.set_low();
+                cube.buttons[i].turn_led_off();
                 last_input = Instant::now();
             }
         }

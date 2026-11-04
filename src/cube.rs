@@ -1,23 +1,21 @@
-use core::slice::SliceIndex;
-
 use crate::button::Button;
 use esp_hal::{delay::Delay, gpio::Output, rng::Rng};
 
-pub struct Cube {
-    pub buttons: [Button; 5],
+pub struct Cube<'a> {
+    pub buttons: [Button<'a>; 5],
     pub buzzer: Output<'static>,
     pub delay: Delay,
     pub rng: Rng,
 }
 
-impl Cube {
+impl<'a> Cube<'a> {
     /// Do an action on all leds
     pub fn all_leds(&mut self, on: bool) {
         for b in self.buttons.iter_mut() {
             if on {
-                b.led.set_high()
+                b.turn_led_on();
             } else {
-                b.led.set_low()
+                b.turn_led_off();
             }
         }
     }

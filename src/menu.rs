@@ -15,8 +15,8 @@ pub fn select_mode(cube: &mut Cube) -> Mode {
     };
     defmt::info!("button {:?} is pressed", idx);
     cube.all_leds(false);
-    cube.buttons[idx].led.set_high();
+    cube.buttons[idx].turn_led_on();
     cube.buttons[idx].make_sound(&mut cube.buzzer, &cube.delay);
-    cube.buttons[idx].led.set_low();
+    cube.buttons[idx].turn_led_off();
     MODES[idx]
 }
