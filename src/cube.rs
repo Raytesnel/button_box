@@ -1,5 +1,10 @@
 use crate::button::Button;
-use esp_hal::{delay::Delay, gpio::Output, rng::Rng};
+use esp_hal::{
+    delay::Delay,
+    gpio::Output,
+    rng::Rng,
+    time::{Duration, Instant},
+};
 
 pub struct Cube<'a> {
     pub buttons: [Button<'a>; 5],
@@ -25,6 +30,16 @@ impl<'a> Cube<'a> {
         self.delay.delay_millis(50);
     }
 
+    pub fn wait_press_timeout(&self, timeout_ms: u64) -> Option<usize> {
+        let start = Instant::now();
+        while start.elapsed() < Duration::from_millis(timeout_ms) {
+            if let Some(i) = self.buttons.iter().position(|b| b.is_pressed()) {
+                return Some(i);
+            }
+        }
+        None
+    }
+
     /// choose a random button
     pub fn random_button(&self) -> usize {
         (self.rng.random() % self.buttons.len() as u32) as usize
@@ -46,7 +61,9 @@ impl<'a> Cube<'a> {
         let notes = [(233, 250), (220, 250), (208, 250)];
 
         for (freq, ms) in notes {
+            self.all_leds(true);
             self.play_tone(freq, ms);
+            self.all_leds(false);
             self.delay.delay_millis(80); // de stilte maakt het "mwap"
         }
         // the long "mwaaaap": slides down while wobbling
