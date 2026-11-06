@@ -10,13 +10,14 @@ use esp_hal::{
 };
 use panic_rtt_target as _;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum Note {
     C4 = 262,
+    D4 = 294,
     E4 = 330,
+    F4 = 349,
     G4 = 392,
-    C5 = 523,
-    A5 = 666,
+    A4 = 440,
 }
 
 #[derive(Copy, Clone, defmt::Format)]

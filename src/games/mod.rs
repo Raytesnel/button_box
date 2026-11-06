@@ -1,6 +1,7 @@
 use crate::cube::Cube;
 
 mod free_play;
+mod led_hero;
 mod reaction;
 mod simon_says;
 
@@ -9,7 +10,7 @@ pub enum Mode {
     FreePlay,
     Simon,
     Reaction,
-    Kids,
+    LedHero,
     Critter,
 }
 
@@ -18,7 +19,7 @@ pub const MODES: [Mode; 5] = [
     Mode::FreePlay,
     Mode::Simon,
     Mode::Reaction,
-    Mode::Kids,
+    Mode::LedHero,
     Mode::Critter,
 ];
 
@@ -27,6 +28,7 @@ pub fn run_game(mode: Mode, cube: &mut Cube) {
         Mode::FreePlay => free_play::play(cube),
         Mode::Reaction => reaction::play(cube),
         Mode::Simon => simon_says::play(cube),
-        Mode::Kids | Mode::Critter => {}
+        Mode::LedHero => led_hero::play(cube),
+        Mode::Critter => {}
     }
 }

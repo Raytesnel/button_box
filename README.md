@@ -15,7 +15,7 @@ Press the button that matches a game's position in the menu to start it.
 | Green | **Free Play** | Done | Press a button, get its light and note. A tiny instrument. |
 | Yellow | **Simon** | Planned | Repeat the growing sequence of lights and tones. |
 | Red | **Reaction** | Done | A random button lights up and slowly fades. Press it before it's gone. It speeds up every 5 points. |
-| Blue | **Kids** | Planned | Just some random blieps and lights, DISCO DISCO. |
+| Blue | **Led Hero** | Planned | play songs, on rithme of the box, DISCO DISCO. |
 | White | **Critter** | Planned | kind of "wack a mole". the "mole" can move only 1 led at the time. press it before it moves to the next led. every hit will let the "mole" move faster |
 
 When you run out of lives you get the sad-trombone "mwap mwap mwap mwaaaap" game-over jingle.
@@ -23,7 +23,7 @@ When you run out of lives you get the sad-trombone "mwap mwap mwap mwaaaap" game
 ## Features
 
 - Smooth LED fades using the hardware **LEDC** peripheral (no CPU time spent on dimming)
-- Each button has its own musical note (C4, E4, G4, C5, A5)
+- Each button has its own musical note (C4, D4, E4, G4, A4)
 - Square-wave buzzer sounds generated in software
 - Random game logic using the hardware RNG
 - Logging over RTT with `defmt`

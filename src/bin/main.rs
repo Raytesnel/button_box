@@ -73,7 +73,7 @@ fn main() -> ! {
                 &timer,
                 channel::Number::Channel1,
                 peripherals.GPIO6,
-                Note::E4,
+                Note::D4,
             ),
             Button::new(
                 Colors::Red,
@@ -82,7 +82,7 @@ fn main() -> ! {
                 &timer,
                 channel::Number::Channel2,
                 peripherals.GPIO21,
-                Note::G4,
+                Note::E4,
             ),
             Button::new(
                 Colors::Blue,
@@ -91,7 +91,7 @@ fn main() -> ! {
                 &timer,
                 channel::Number::Channel3,
                 peripherals.GPIO8,
-                Note::C5,
+                Note::G4,
             ),
             Button::new(
                 Colors::White,
@@ -100,7 +100,7 @@ fn main() -> ! {
                 &timer,
                 channel::Number::Channel4,
                 peripherals.GPIO10,
-                Note::A5,
+                Note::A4,
             ),
         ],
     };
