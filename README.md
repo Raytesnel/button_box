@@ -46,16 +46,16 @@ When you run out of lives you get the sad-trombone "mwap mwap mwap mwaaaap" game
 | Function | Colour | GPIO |
 |---|---|---|
 | Button | Green | 2 |
-| Button | Yellow | 5 |
-| Button | Red | 7 |
+| Button | white | 5 |
+| Button | Yellow | 7 |
 | Button | Blue | 20 |
-| Button | White | 9 | // TODO: needs to go to GPIO5 for wake up from deepsleep (top led on the box)
+| Button | Red | 9 |
 | Buzzer | – | 4 |
 | LED | Green | 3 |
-| LED | Yellow | 6 |
-| LED | Red | 21 |
+| LED | White | 6 |
+| LED | Yellow | 21 |
 | LED | Blue | 20 |
-| LED | White | 10 |
+| LED | Red | 10 |
 
 Buttons are wired between the GPIO and GND and use the internal pull-up, so a press reads as **low**. LEDs are driven by LEDC PWM channels 0–4 sharing a single 24 kHz, 8-bit timer.
 

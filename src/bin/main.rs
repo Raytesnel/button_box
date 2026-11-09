@@ -67,7 +67,7 @@ fn main() -> ! {
                 Note::C4,
             ),
             Button::new(
-                Colors::Yellow,
+                Colors::White,
                 Input::new(peripherals.GPIO5, button_config),
                 &ledc,
                 &timer,
@@ -76,7 +76,7 @@ fn main() -> ! {
                 Note::D4,
             ),
             Button::new(
-                Colors::Red,
+                Colors::Yellow,
                 Input::new(peripherals.GPIO7, button_config),
                 &ledc,
                 &timer,
@@ -94,7 +94,7 @@ fn main() -> ! {
                 Note::G4,
             ),
             Button::new(
-                Colors::White,
+                Colors::Red,
                 Input::new(peripherals.GPIO9, button_config),
                 &ledc,
                 &timer,
